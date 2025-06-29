@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(SameBoy)
+project(SDLGameBoy)
 
 set(CMAKE_CXX_STANDARD 17)
 

@@ -36,7 +36,7 @@
 build/
 assets/
 
-SamsSearch
+SDLGameBoy
 
 # CMake
 CMakeLists.txt.user
@@ -54,3 +54,5 @@ _deps
 build.ninja
 .ninja_deps
 .ninja_log
+.clang-tidy
+

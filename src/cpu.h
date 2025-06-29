@@ -1,36 +1,43 @@
 #pragma once
+#include <cstdint>
+
+typedef uint8_t BYTE;
+typedef uint16_t WORD;
 
 struct registers {
-        union {
-            struct {
-                byte flag;
-                byte a;
-            };
-            word af;
+    union {
+        struct {
+            BYTE flag;
+            BYTE a;
         };
 
-        union {
-            struct {
-                byte c;
-                byte b;
-            };
-            word bc;
+        WORD af;
+    };
+
+    union {
+        struct {
+            BYTE c;
+            BYTE b;
         };
 
-        union {
-            struct {
-                byte e;
-                byte d;
-            };
-            word de;
+        WORD bc;
+    };
+
+    union {
+        struct {
+            BYTE e;
+            BYTE d;
         };
 
-        union {
-            struct {
-                byte l;
-                byte h;
-            };
-            word hl;
+        WORD de;
+    };
+
+    union {
+        struct {
+            BYTE l;
+            BYTE h;
         };
 
+        WORD hl;
+    };
 };
