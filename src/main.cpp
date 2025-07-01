@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 
     Engine engine;
 
-    engine.init();//Load Wanted EmulationEngine (GB at this sage)
+    engine.init();//Load Wanted EmulationEngine (GB at this stage)
 
     while (engine.running()) {
         const Uint64 frameStart = SDL_GetTicks();

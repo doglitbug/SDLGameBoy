@@ -1,10 +1,10 @@
 #pragma once
 
-#include <array>
-#include <map>
-
 #include "common.h"
 #include <string>
+#include <map>
+
+#include "mmu.h"
 
 class cpu;
 
@@ -64,10 +64,9 @@ struct registers {
     WORD pc;
 };
 
-//typedef void (*NoOperand)(const cpu &);
-typedef void (cpu::*NoOperand)(void);
-typedef void (cpu::*OneOperand)(BYTE);
-typedef void (cpu::*TwoOperand)(WORD);
+typedef void (cpu::*NoOperand)();
+typedef void (cpu::*ByteOperand)(BYTE);
+typedef void (cpu::*WordOperand)(WORD);
 
 class cpu {
 public:
@@ -77,29 +76,37 @@ public:
         int cycles;
         union {
             NoOperand noOperand;
-            OneOperand oneOperand;
-            TwoOperand twoOperand;
+            ByteOperand byteOperand;
+            WordOperand wordOperand;
         } execute;
     };
 
     cpu();
-
     ~cpu();
 
     /// @brief Set the CPU to a known state
     void reset();
 
+    /// @brief Testing only
+    /// @param instr Opcode to test
+    void test(int instr);
+
     /// @brief Perform one CPU cycle
     void tick();
 
-    /// @brief 0x00 NOP No operation
-    void nop(void);
+    // 0x00
+    void nop();
+    void ld_bc_nn(WORD nn);
 
-    void nopByte(BYTE i);
+    // 0x10
+
 
 private:
+    friend class Engine;
     registers m_reg;
     std::map<int, instruction> m_instr;
+    //Pointer to MMU (in Engine)
+    mmu *p_mmu;
 };
 
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SDL3/SDL.h>
-
 #include "cpu.h"
+#include "mmu.h"
 
 class Engine {
 public:
@@ -27,7 +27,7 @@ private:
     //std::vector<bool> m_buttonStates;
     //void onButtonChange(const SDL_Event &event);
 
-
-    //Emulators
+    //Emulators (parts at the moment but these should be contained under inherited game-engines)
     cpu m_cpu;
+    mmu m_mmu;
 };

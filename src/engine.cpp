@@ -43,6 +43,8 @@ Engine::~Engine() {
 
 void Engine::init() {
     m_cpu.reset();
+    //Link MMU
+    m_cpu.p_mmu = &m_mmu;
 }
 
 void Engine::handleEvents() {
@@ -69,4 +71,5 @@ void Engine::handleEvents() {
 }
 
 void Engine::update(float deltaTime) {
+    m_cpu.tick();
 }

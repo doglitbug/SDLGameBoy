@@ -12,6 +12,8 @@ add_executable(${PROJECT_NAME}
         src/cpu.cpp
         src/common.h
         src/engine.cpp
-        src/engine.h)
+        src/engine.h
+        src/mmu.cpp
+        src/mmu.h)
 
 target_link_libraries(${PROJECT_NAME} SDL3)
