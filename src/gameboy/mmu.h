@@ -21,13 +21,23 @@ public:
     /// @return WORD
     WORD readWord(WORD address);
 
+    /// @brief Write a byte to the specified address
+    /// @param address as WORD
+    /// @param value BYTE to write
+    void writeByte(WORD address, BYTE value);
+
+    /// @brief Write a word to the specified address
+    /// @param address as WORD
+    /// @param value WORD to write
+    void writeWord(WORD address, WORD value);
+
 private:
     friend class Engine;
     //Pointer to cartridge (in Engine)
     cartridge *p_cartridge;
 
-    bool m_biosEnabled;
     //Internal BIOS
+    bool m_biosEnabled;
     void loadBIOS();
     BYTE bios[0x100];
 };

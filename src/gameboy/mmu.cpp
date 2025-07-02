@@ -36,6 +36,14 @@ WORD mmu::readWord(const WORD address) {
     return readByte(address) | (readByte(address + 1) << 8);
 }
 
+void mmu::writeByte(WORD address, BYTE value) {
+    NOTYET
+}
+
+void mmu::writeWord(WORD address, WORD value) {
+    NOTYET
+}
+
 void mmu::loadBIOS() {
     size_t fileSize = 0;
     void *buffer = SDL_LoadFile("assets/gb_bios.bin", &fileSize);

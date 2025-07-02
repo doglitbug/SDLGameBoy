@@ -13,6 +13,7 @@ cpu::cpu() {
     m_instr[0x21] = {"LD HL, 0x%04X", 2, 12, nullptr};m_instr[0x21].execute.wordOperand = &cpu::ld_hl_nn;
 
     m_instr[0x31] = {"LD SP, 0x%04X", 2, 12, nullptr};m_instr[0x31].execute.wordOperand = &cpu::ld_sp_nn;
+    m_instr[0x32] = {"LDD (HL),A", 0, 8, &cpu::ldd_hl_a};
 
     m_instr[0xA8] = {"XOR B",0,4,&cpu::xor_b};
     m_instr[0xA9] = {"XOR C",0,4,&cpu::xor_c};
@@ -23,8 +24,16 @@ cpu::cpu() {
     m_instr[0xAE] = {"XOR (HL)",0,8,&cpu::xor_hl};
     m_instr[0xAF] = {"XOR A",0,4,&cpu::xor_a};
 
+    m_instr[0xCB] = {"CB Prefix", 1, 0, nullptr};m_instr[0xCB].execute.byteOperand = &cpu::dispatchCB;
+
     m_instr[0xEE] = {"XOR *",1,8,nullptr};m_instr[0xEE].execute.byteOperand = &cpu::xor_n;
 
+    //CB Prefixed
+    m_cbInstr[0x00] = {"RLC B",1,8,nullptr};
+
+
+    m_cbInstr[0x7C] = {"BIT 7, H",0,8,&cpu::cb_test_7_h};
+    m_cbInstr[0x7D] = {"BIT 7, L",0,8,&cpu::cb_test_7_l};
 
     reset();
     SDL_Log("CPU initialized");
@@ -61,25 +70,39 @@ void cpu::dispatch(const int instr) {
         return;
     }
 
-    switch (m_instr[instr].operandLength) {
-        case 0:
-            (this->*m_instr[instr].execute.noOperand)();
-            break;
-        case 1:
-            (this->*m_instr[instr].execute.byteOperand)(p_mmu->readByte(m_reg.pc));
-            break;
-        case 2:
-            (this->*m_instr[instr].execute.wordOperand)(p_mmu->readWord(m_reg.pc));
-            break;
-        default:
-            SDL_Log("Unknown operand length %d", m_instr[instr].operandLength);
-            break;
-    }
+        switch (m_instr[instr].operandLength) {
+            case 0:
+                (this->*m_instr[instr].execute.noOperand)();
+                break;
+            case 1:
+                (this->*m_instr[instr].execute.byteOperand)(p_mmu->readByte(m_reg.pc));
+                break;
+            case 2:
+                (this->*m_instr[instr].execute.wordOperand)(p_mmu->readWord(m_reg.pc));
+                break;
+            default:
+                SDL_Log("Unknown operand length %d", m_instr[instr].operandLength);
+                break;
+        }
 
-    m_reg.pc += m_instr[instr].operandLength;
+        m_reg.pc += m_instr[instr].operandLength;
 }
 
-void cpu::do_xor(const BYTE &value) {
+void cpu::dispatchCB(const BYTE opCode) {
+    if (m_cbInstr.find(opCode) == m_instr.end()) {
+        SDL_Log("Missing CB OpCode 0x%02X", opCode);
+        return;
+    }
+
+    if (m_cbInstr[opCode].execute.noOperand == nullptr) {
+        SDL_Log("Incomplete CB OpCode 0x%02X", opCode);
+        return;
+    }
+
+    (this->*m_cbInstr[opCode].execute.noOperand)();
+}
+
+void cpu::doXOR(const BYTE &value) {
     m_reg.a ^= value;
 
     m_reg.zero = m_reg.a == 0;
@@ -88,11 +111,16 @@ void cpu::do_xor(const BYTE &value) {
     m_reg.carry = false;
 }
 
+void cpu::doBitTest(const int bit, const BYTE &value) {
+    m_reg.zero = !testBit(bit, value);
+    m_reg.negative = false;
+    m_reg.halfCarry = true;
+}
 
+
+// ReSharper disable once CppMemberFunctionMayBeStatic
 // 0x00
-void cpu::nop() {
-    SDL_Log("NOP");
-};
+void cpu::nop() {};
 
 void cpu::ld_bc_nn(const WORD operand) {
     m_reg.bc = operand;
@@ -110,38 +138,52 @@ void cpu::ld_sp_nn(const WORD operand) {
     m_reg.sp = operand;
 }
 
+void cpu::ldd_hl_a() {
+    p_mmu->writeByte(m_reg.hl, m_reg.a);
+    m_reg.hl--;
+}
+
 void cpu::xor_b() {
-    do_xor(m_reg.b);
+    doXOR(m_reg.b);
 }
 
 void cpu::xor_c() {
-    do_xor(m_reg.c);
+    doXOR(m_reg.c);
 }
 
 void cpu::xor_d() {
-    do_xor(m_reg.d);
+    doXOR(m_reg.d);
 }
 
 void cpu::xor_e() {
-    do_xor(m_reg.e);
+    doXOR(m_reg.e);
 }
 
 void cpu::xor_h() {
-    do_xor(m_reg.h);
+    doXOR(m_reg.h);
 }
 
 void cpu::xor_l() {
-    do_xor(m_reg.l);
+    doXOR(m_reg.l);
 }
 
 void cpu::xor_hl() {
-    do_xor(p_mmu->readByte(m_reg.hl));
+    doXOR(p_mmu->readByte(m_reg.hl));
 }
 
 void cpu::xor_a() {
-    do_xor(m_reg.a);
+    doXOR(m_reg.a);
 }
 
 void cpu::xor_n(const BYTE operand) {
-    do_xor(operand);
+    doXOR(operand);
+}
+
+
+//CB
+void cpu::cb_test_7_h() {
+    doBitTest(7, m_reg.h);
+
+}void cpu::cb_test_7_l() {
+    doBitTest(7, m_reg.l);
 }

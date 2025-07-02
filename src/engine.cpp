@@ -77,6 +77,7 @@ void Engine::handleEvents() {
                 break;
 
             case SDL_EVENT_KEY_DOWN:
+                //TODO Ctrl+O for open etc
             case SDL_EVENT_KEY_UP:
                 //onKeyChange();
                 break;

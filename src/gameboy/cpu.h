@@ -31,20 +31,24 @@ public:
     /// @brief Set the CPU to a known state
     void reset();
 
-    /// @brief Dispatch am opcode
-    /// @param instr Opcode to test
+    /// @brief Dispatch an opcode
+    /// @param instr Opcode
     void dispatch(int instr);
-
+    void dispatchCB(BYTE opCode);
 
     /// @brief Logical exclusive OR n with register A, result in A
     /// @param value register or value
-    void do_xor(const BYTE &value);
+    void doXOR(const BYTE &value);
+
+    /// Test bit in register
+    /// @param bit to test
+    /// @param value to test
+    void doBitTest(int bit, const BYTE &value);
 
     /// @brief Perform one CPU cycle
     void tick(float deltaTime);
 
-
-
+    //Normal opCodes
     void nop();                     //0x00
     void ld_bc_nn(WORD operand);    //0x01
 
@@ -53,6 +57,7 @@ public:
     void ld_hl_nn(WORD operand);    //0x21
 
     void ld_sp_nn(WORD operand);    //0x31
+    void ldd_hl_a();                //0x32
 
     void xor_b();                   //0xA8
     void xor_c();                   //0xA9
@@ -63,7 +68,14 @@ public:
     void xor_hl();                  //0xAE
     void xor_a();                   //0xAF
 
+                                    //0xCB
+
     void xor_n(BYTE operand);       //0xEE
+
+    //CB opCodes
+
+    void cb_test_7_h();             //0x7C
+    void cb_test_7_l();             //0x7D
 
 
 private:
@@ -126,6 +138,7 @@ private:
     friend class Engine;
     registers m_reg;
     std::map<int, instruction> m_instr;
+    std::map<int, instruction> m_cbInstr;
     //Pointer to MMU (in Engine)
     mmu *p_mmu;
 };
