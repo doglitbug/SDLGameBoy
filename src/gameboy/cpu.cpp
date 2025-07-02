@@ -31,9 +31,70 @@ cpu::cpu() {
     //CB Prefixed
     m_cbInstr[0x00] = {"RLC B",1,8,nullptr};
 
-
+    m_cbInstr[0x40] = {"BIT 0, B",0,8,&cpu::cb_test_0_b};
+    m_cbInstr[0x41] = {"BIT 0, C",0,8,&cpu::cb_test_0_c};
+    m_cbInstr[0x42] = {"BIT 0, D",0,8,&cpu::cb_test_0_d};
+    m_cbInstr[0x43] = {"BIT 0, E",0,8,&cpu::cb_test_0_e};
+    m_cbInstr[0x44] = {"BIT 0, H",0,8,&cpu::cb_test_0_h};
+    m_cbInstr[0x45] = {"BIT 0, L",0,8,&cpu::cb_test_0_l};
+    m_cbInstr[0x46] = {"BIT 0, (HL)",0,12,&cpu::cb_test_0_hl};
+    m_cbInstr[0x47] = {"BIT 0, A",0,8,&cpu::cb_test_0_a};
+    m_cbInstr[0x48] = {"BIT 1, B",0,8,&cpu::cb_test_1_b};
+    m_cbInstr[0x49] = {"BIT 1, C",0,8,&cpu::cb_test_1_c};
+    m_cbInstr[0x4A] = {"BIT 1, D",0,8,&cpu::cb_test_1_d};
+    m_cbInstr[0x4B] = {"BIT 1, E",0,8,&cpu::cb_test_1_e};
+    m_cbInstr[0x4C] = {"BIT 1, H",0,8,&cpu::cb_test_1_h};
+    m_cbInstr[0x4D] = {"BIT 1, L",0,8,&cpu::cb_test_1_l};
+    m_cbInstr[0x4E] = {"BIT 1, (HL)",0,12,&cpu::cb_test_1_hl};
+    m_cbInstr[0x4F] = {"BIT 1, A",0,8,&cpu::cb_test_1_a};
+    m_cbInstr[0x50] = {"BIT 2, B",0,8,&cpu::cb_test_2_b};
+    m_cbInstr[0x51] = {"BIT 2, C",0,8,&cpu::cb_test_2_c};
+    m_cbInstr[0x52] = {"BIT 2, D",0,8,&cpu::cb_test_2_d};
+    m_cbInstr[0x53] = {"BIT 2, E",0,8,&cpu::cb_test_2_e};
+    m_cbInstr[0x54] = {"BIT 2, H",0,8,&cpu::cb_test_2_h};
+    m_cbInstr[0x55] = {"BIT 2, L",0,8,&cpu::cb_test_2_l};
+    m_cbInstr[0x56] = {"BIT 2, (HL)",0,12,&cpu::cb_test_2_hl};
+    m_cbInstr[0x57] = {"BIT 2, A",0,8,&cpu::cb_test_2_a};
+    m_cbInstr[0x58] = {"BIT 3, B",0,8,&cpu::cb_test_3_b};
+    m_cbInstr[0x59] = {"BIT 3, C",0,8,&cpu::cb_test_3_c};
+    m_cbInstr[0x5A] = {"BIT 3, D",0,8,&cpu::cb_test_3_d};
+    m_cbInstr[0x5B] = {"BIT 3, E",0,8,&cpu::cb_test_3_e};
+    m_cbInstr[0x5C] = {"BIT 3, H",0,8,&cpu::cb_test_3_h};
+    m_cbInstr[0x5D] = {"BIT 3, L",0,8,&cpu::cb_test_3_l};
+    m_cbInstr[0x5E] = {"BIT 3, (HL)",0,12,&cpu::cb_test_3_hl};
+    m_cbInstr[0x5F] = {"BIT 3, A",0,8,&cpu::cb_test_3_a};
+    m_cbInstr[0x60] = {"BIT 4, B",0,8,&cpu::cb_test_4_b};
+    m_cbInstr[0x61] = {"BIT 4, C",0,8,&cpu::cb_test_4_c};
+    m_cbInstr[0x62] = {"BIT 4, D",0,8,&cpu::cb_test_4_d};
+    m_cbInstr[0x63] = {"BIT 4, E",0,8,&cpu::cb_test_4_e};
+    m_cbInstr[0x64] = {"BIT 4, H",0,8,&cpu::cb_test_4_h};
+    m_cbInstr[0x65] = {"BIT 4, L",0,8,&cpu::cb_test_4_l};
+    m_cbInstr[0x66] = {"BIT 4, (HL)",0,12,&cpu::cb_test_4_hl};
+    m_cbInstr[0x67] = {"BIT 4, A",0,8,&cpu::cb_test_4_a};
+    m_cbInstr[0x68] = {"BIT 5, B",0,8,&cpu::cb_test_5_b};
+    m_cbInstr[0x69] = {"BIT 5, C",0,8,&cpu::cb_test_5_c};
+    m_cbInstr[0x6A] = {"BIT 5, D",0,8,&cpu::cb_test_5_d};
+    m_cbInstr[0x6B] = {"BIT 5, E",0,8,&cpu::cb_test_5_e};
+    m_cbInstr[0x6C] = {"BIT 5, H",0,8,&cpu::cb_test_5_h};
+    m_cbInstr[0x6D] = {"BIT 5, L",0,8,&cpu::cb_test_5_l};
+    m_cbInstr[0x6E] = {"BIT 5, (HL)",0,12,&cpu::cb_test_5_hl};
+    m_cbInstr[0x6F] = {"BIT 5, A",0,12,&cpu::cb_test_5_a};
+    m_cbInstr[0x70] = {"BIT 6, B",0,8,&cpu::cb_test_6_b};
+    m_cbInstr[0x71] = {"BIT 6, C",0,8,&cpu::cb_test_6_c};
+    m_cbInstr[0x72] = {"BIT 6, D",0,8,&cpu::cb_test_6_d};
+    m_cbInstr[0x73] = {"BIT 6, E",0,8,&cpu::cb_test_6_e};
+    m_cbInstr[0x74] = {"BIT 6, H",0,8,&cpu::cb_test_6_h};
+    m_cbInstr[0x75] = {"BIT 6, L",0,8,&cpu::cb_test_6_l};
+    m_cbInstr[0x76] = {"BIT 6, (HL)",0,12,&cpu::cb_test_6_hl};
+    m_cbInstr[0x77] = {"BIT 6, A",0,8,&cpu::cb_test_6_a};
+    m_cbInstr[0x78] = {"BIT 7, B",0,8,&cpu::cb_test_7_b};
+    m_cbInstr[0x79] = {"BIT 7, C",0,8,&cpu::cb_test_7_c};
+    m_cbInstr[0x7A] = {"BIT 7, D",0,8,&cpu::cb_test_7_d};
+    m_cbInstr[0x7B] = {"BIT 7, E",0,8,&cpu::cb_test_7_e};
     m_cbInstr[0x7C] = {"BIT 7, H",0,8,&cpu::cb_test_7_h};
     m_cbInstr[0x7D] = {"BIT 7, L",0,8,&cpu::cb_test_7_l};
+    m_cbInstr[0x7E] = {"BIT 7, (HL)",0,12,&cpu::cb_test_7_hl};
+    m_cbInstr[0x7F] = {"BIT 7, A",0,8,&cpu::cb_test_7_a};
 
     reset();
     SDL_Log("CPU initialized");
@@ -179,11 +240,196 @@ void cpu::xor_n(const BYTE operand) {
     doXOR(operand);
 }
 
-
 //CB
+void cpu::cb_test_0_b() {
+    doBitTest(0, m_reg.b);
+}
+void cpu::cb_test_0_c() {
+    doBitTest(0, m_reg.c);
+}
+void cpu::cb_test_0_d() {
+    doBitTest(0, m_reg.d);
+}
+void cpu::cb_test_0_e() {
+    doBitTest(0, m_reg.e);
+}
+void cpu::cb_test_0_h() {
+    doBitTest(0, m_reg.h);
+}
+void cpu::cb_test_0_l() {
+    doBitTest(0, m_reg.l);
+}
+void cpu::cb_test_0_hl() {
+    doBitTest(0, p_mmu->readByte(m_reg.hl));
+}
+void cpu::cb_test_0_a() {
+    doBitTest(0, m_reg.a);
+}
+void cpu::cb_test_1_b() {
+    doBitTest(1, m_reg.b);
+}
+void cpu::cb_test_1_c() {
+    doBitTest(1, m_reg.c);
+}
+void cpu::cb_test_1_d() {
+    doBitTest(1, m_reg.d);
+}
+void cpu::cb_test_1_e() {
+    doBitTest(1, m_reg.e);
+}
+void cpu::cb_test_1_h() {
+    doBitTest(1, m_reg.h);
+}
+void cpu::cb_test_1_l() {
+    doBitTest(1, m_reg.l);
+}
+void cpu::cb_test_1_hl() {
+    doBitTest(1, p_mmu->readByte(m_reg.hl));
+}
+void cpu::cb_test_1_a() {
+    doBitTest(1, m_reg.a);
+}
+void cpu::cb_test_2_b() {
+    doBitTest(2, m_reg.b);
+}
+void cpu::cb_test_2_c() {
+    doBitTest(2, m_reg.c);
+}
+void cpu::cb_test_2_d() {
+    doBitTest(2, m_reg.d);
+}
+void cpu::cb_test_2_e() {
+    doBitTest(2, m_reg.e);
+}
+void cpu::cb_test_2_h() {
+    doBitTest(2, m_reg.h);
+}
+void cpu::cb_test_2_l() {
+    doBitTest(2, m_reg.l);
+}
+void cpu::cb_test_2_hl() {
+    doBitTest(2, p_mmu->readByte(m_reg.hl));
+}
+void cpu::cb_test_2_a() {
+    doBitTest(2, m_reg.a);
+}
+void cpu::cb_test_3_b() {
+    doBitTest(3, m_reg.b);
+}
+void cpu::cb_test_3_c() {
+    doBitTest(3, m_reg.c);
+}
+void cpu::cb_test_3_d() {
+    doBitTest(3, m_reg.d);
+}
+void cpu::cb_test_3_e() {
+    doBitTest(3, m_reg.e);
+}
+void cpu::cb_test_3_h() {
+    doBitTest(3, m_reg.h);
+}
+void cpu::cb_test_3_l() {
+    doBitTest(3, m_reg.l);
+}
+void cpu::cb_test_3_hl() {
+    doBitTest(3, p_mmu->readByte(m_reg.hl));
+}
+void cpu::cb_test_3_a() {
+    doBitTest(3, m_reg.a);
+}
+void cpu::cb_test_4_b() {
+    doBitTest(4, m_reg.b);
+}
+void cpu::cb_test_4_c() {
+    doBitTest(4, m_reg.c);
+}
+void cpu::cb_test_4_d() {
+    doBitTest(4, m_reg.d);
+}
+void cpu::cb_test_4_e() {
+    doBitTest(4, m_reg.e);
+}
+void cpu::cb_test_4_h() {
+    doBitTest(4, m_reg.h);
+}
+void cpu::cb_test_4_l() {
+    doBitTest(4, m_reg.l);
+}
+void cpu::cb_test_4_hl() {
+    doBitTest(4, p_mmu->readByte(m_reg.hl));
+}
+void cpu::cb_test_4_a() {
+    doBitTest(4, m_reg.a);
+}
+void cpu::cb_test_5_b() {
+    doBitTest(5, m_reg.b);
+}
+void cpu::cb_test_5_c() {
+    doBitTest(5, m_reg.c);
+}
+void cpu::cb_test_5_d() {
+    doBitTest(5, m_reg.d);
+}
+void cpu::cb_test_5_e() {
+    doBitTest(5, m_reg.e);
+}
+void cpu::cb_test_5_h() {
+    doBitTest(5, m_reg.h);
+}
+void cpu::cb_test_5_l() {
+    doBitTest(5, m_reg.l);
+}
+void cpu::cb_test_5_hl() {
+    doBitTest(5, p_mmu->readByte(m_reg.hl));
+}
+void cpu::cb_test_5_a() {
+    doBitTest(5, m_reg.a);
+}
+void cpu::cb_test_6_b() {
+    doBitTest(6, m_reg.b);
+}
+void cpu::cb_test_6_c() {
+    doBitTest(6, m_reg.c);
+}
+void cpu::cb_test_6_d() {
+    doBitTest(6, m_reg.d);
+}
+void cpu::cb_test_6_e() {
+    doBitTest(6, m_reg.e);
+}
+void cpu::cb_test_6_h() {
+    doBitTest(6, m_reg.h);
+}
+void cpu::cb_test_6_l() {
+    doBitTest(6, m_reg.l);
+}
+void cpu::cb_test_6_hl() {
+    doBitTest(6, p_mmu->readByte(m_reg.hl));
+}
+void cpu::cb_test_6_a() {
+    doBitTest(6, m_reg.a);
+}
+void cpu::cb_test_7_b() {
+    doBitTest(7, m_reg.b);
+}
+void cpu::cb_test_7_c() {
+    doBitTest(7, m_reg.c);
+}
+void cpu::cb_test_7_d() {
+    doBitTest(7, m_reg.d);
+}
+void cpu::cb_test_7_e() {
+    doBitTest(7, m_reg.e);
+}
 void cpu::cb_test_7_h() {
     doBitTest(7, m_reg.h);
-
-}void cpu::cb_test_7_l() {
+}
+void cpu::cb_test_7_l() {
     doBitTest(7, m_reg.l);
+}
+void cpu::cb_test_7_hl() {
+    doBitTest(7, p_mmu->readByte(m_reg.hl));
+}
+void cpu::cb_test_7_a() {
+    doBitTest(7, m_reg.a);
 }
