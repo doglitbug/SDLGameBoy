@@ -1,6 +1,8 @@
 #include "engine.h"
 #include <iostream>
 
+#include "cartridge.h"
+
 Engine::Engine() {
     try {
         m_scale = 2;
@@ -19,7 +21,7 @@ Engine::Engine() {
             throw std::runtime_error("SDL_CreateRenderer error");
         }
 
-        if (!SDL_SetRenderScale(m_renderer, m_scale*0-100, m_scale)) {
+        if (!SDL_SetRenderScale(m_renderer, m_scale, m_scale)) {
             throw std::runtime_error("SDL_SetRenderScale error");
         }
     } catch (std::runtime_error e) {
@@ -28,23 +30,37 @@ Engine::Engine() {
     }
 
     //TODO Init gamepad and keyboard stuff
-
+    m_gamepad = nullptr;
     m_running = true;
+    SDL_Log("Engine initialized");
 }
 
 Engine::~Engine() {
+    delete(m_cartridge);
+    delete(m_mmu);
+    delete(m_cpu);
     if (m_gamepad) {
         SDL_CloseGamepad(m_gamepad);
     }
     SDL_DestroyWindow(m_window);
     SDL_DestroyRenderer(m_renderer);
     SDL_Quit();
+    SDL_Log("Engine destroyed");
 }
 
 void Engine::init() {
-    m_cpu.reset();
+    m_cpu = new cpu();
+    m_mmu = new mmu();
+    m_cartridge = new cartridge();
+
+    m_cpu->reset();
     //Link MMU
-    m_cpu.p_mmu = &m_mmu;
+    m_cpu->p_mmu = m_mmu;
+    //Link cartridge
+    m_mmu->p_cartridge = m_cartridge;
+
+    //Load testing file
+    m_cartridge->loadCartridgeFromFile("assets/Tetris.gb");
 }
 
 void Engine::handleEvents() {
@@ -70,6 +86,7 @@ void Engine::handleEvents() {
     }
 }
 
-void Engine::update(float deltaTime) {
-    m_cpu.tick();
+void Engine::update(const float deltaTime) const {
+    m_cpu->tick(deltaTime);
+    SDL_Delay(100);
 }
