@@ -31,22 +31,40 @@ public:
     /// @brief Set the CPU to a known state
     void reset();
 
-    /// @brief Testing only
+    /// @brief Dispatch am opcode
     /// @param instr Opcode to test
     void dispatch(int instr);
+
+
+    /// @brief Logical exclusive OR n with register A, result in A
+    /// @param value register or value
+    void do_xor(const BYTE &value);
 
     /// @brief Perform one CPU cycle
     void tick(float deltaTime);
 
 
-    void nop(); //0x00
-    void ld_bc_nn(WORD operand); //0x01
 
-    void ld_de_nn(WORD operand); //0x11
+    void nop();                     //0x00
+    void ld_bc_nn(WORD operand);    //0x01
 
-    void ld_hl_nn(WORD operand); //0x21
+    void ld_de_nn(WORD operand);    //0x11
 
-    void ld_sp_nn(WORD operand); //0x31
+    void ld_hl_nn(WORD operand);    //0x21
+
+    void ld_sp_nn(WORD operand);    //0x31
+
+    void xor_b();                   //0xA8
+    void xor_c();                   //0xA9
+    void xor_d();                   //0xAA
+    void xor_e();                   //0xAB
+    void xor_h();                   //0xAC
+    void xor_l();                   //0xAD
+    void xor_hl();                  //0xAE
+    void xor_a();                   //0xAF
+
+    void xor_n(BYTE operand);       //0xEE
+
 
 private:
     ///@todo This stuff is backwards, might have to switch endianness depending on target architecture?
@@ -61,7 +79,7 @@ private:
                         bool _a: 1;
                         bool carry: 1;
                         bool halfCarry: 1;
-                        bool subtract: 1;
+                        bool negative: 1;
                         bool zero: 1;
                     };
 
