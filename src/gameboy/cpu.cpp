@@ -8,13 +8,25 @@ cpu::cpu() {
     m_instr[0x00] = {"NOP", 0, 4, &cpu::nop};
     m_instr[0x01] = {"LD BC, u16", 2, 12, nullptr};m_instr[0x01].execute.wordOperand = &cpu::ld_bc_nn;
 
+    m_instr[0x06] = {"LD B, u8", 1, 8, nullptr};m_instr[0x06].execute.byteOperand = &cpu::ld_b_n;
+
+    m_instr[0x0E] = {"LD C, u8", 1, 8, nullptr};m_instr[0x0E].execute.byteOperand = &cpu::ld_c_n;
+
     m_instr[0x11] = {"LD DE, u16", 2, 12, nullptr};m_instr[0x11].execute.wordOperand = &cpu::ld_de_nn;
 
-    m_instr[0x20]={"JP NZ,i8",1,8,nullptr};m_instr[0x20].execute.byteOperand = &cpu::jp_nz;
+    m_instr[0x16] = {"LD D, u8", 1, 8, nullptr};m_instr[0x16].execute.byteOperand = &cpu::ld_d_n;
+
+    m_instr[0x1E] = {"LD E, u8", 1, 8, nullptr};m_instr[0x1E].execute.byteOperand = &cpu::ld_e_n;
+
+    m_instr[0x20] = {"JP NZ, i8",1,8,nullptr};m_instr[0x20].execute.byteOperand = &cpu::jp_nz;
     m_instr[0x21] = {"LD HL, u16", 2, 12, nullptr};m_instr[0x21].execute.wordOperand = &cpu::ld_hl_nn;
 
+    m_instr[0x26] = {"LD H, u8", 1, 8, nullptr};m_instr[0x26].execute.byteOperand = &cpu::ld_h_n;
+
+    m_instr[0x2E] = {"LD L, u8", 1, 8, nullptr};m_instr[0x2E].execute.byteOperand = &cpu::ld_l_n;
+
     m_instr[0x31] = {"LD SP, u16", 2, 12, nullptr};m_instr[0x31].execute.wordOperand = &cpu::ld_sp_nn;
-    m_instr[0x32] = {"LDD (HL),A", 0, 8, &cpu::ldd_hl_a};
+    m_instr[0x32] = {"LDD (HL), A", 0, 8, &cpu::ldd_hl_a};
 
     m_instr[0xA8] = {"XOR B",0,4,&cpu::xor_b};
     m_instr[0xA9] = {"XOR C",0,4,&cpu::xor_c};
@@ -117,8 +129,7 @@ void cpu::reset() {
 
 void cpu::tick(float deltaTime) {
     const BYTE opCode = p_mmu->readByte(m_reg.pc);
-    SDL_Log("0x%04X : [0x%02X] %s",m_reg.pc, opCode, m_instr[opCode].disassembly.c_str());
-    pcChanged = false;
+    printDebug(opCode);
     m_reg.pc++;
     dispatch(opCode);
 }
@@ -193,8 +204,24 @@ void cpu::ld_bc_nn(const WORD operand) {
     m_reg.bc = operand;
 }
 
+void cpu::ld_b_n(const BYTE operand) {
+    m_reg.b = operand;
+}
+
+void cpu::ld_c_n(const BYTE operand) {
+    m_reg.c = operand;
+}
+
 void cpu::ld_de_nn(const WORD operand) {
     m_reg.de = operand;
+}
+
+void cpu::ld_d_n(const BYTE operand) {
+    m_reg.d = operand;
+}
+
+void cpu::ld_e_n(const BYTE operand) {
+    m_reg.e = operand;
 }
 
 void cpu::jp_nz(const BYTE operand) {
@@ -202,11 +229,18 @@ void cpu::jp_nz(const BYTE operand) {
         m_reg.pc += unsignedToSigned(operand);
         m_cycles += 4;
     }
-        pcChanged = true;
 }
 
 void cpu::ld_hl_nn(const WORD operand) {
     m_reg.hl = operand;
+}
+
+void cpu::ld_h_n(const BYTE operand) {
+    m_reg.h = operand;
+}
+
+void cpu::ld_l_n(const BYTE operand) {
+    m_reg.l = operand;
 }
 
 void cpu::ld_sp_nn(const WORD operand) {
@@ -446,4 +480,8 @@ void cpu::cb_test_7_hl() {
 }
 void cpu::cb_test_7_a() {
     doBitTest(7, m_reg.a);
+}
+
+void cpu::printDebug(const BYTE opCode) {
+    SDL_Log("0x%04X : [0x%02X] %s",m_reg.pc, opCode, m_instr[opCode].disassembly.c_str());
 }

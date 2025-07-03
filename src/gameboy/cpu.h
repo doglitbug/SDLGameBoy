@@ -52,10 +52,22 @@ public:
     void nop();                     //0x00
     void ld_bc_nn(WORD operand);    //0x01
 
+    void ld_b_n(BYTE operand);      //0x06
+
+    void ld_c_n(BYTE operand);      //0x0E
+
     void ld_de_nn(WORD operand);    //0x11
+
+    void ld_d_n(BYTE operand);      //0x16
+
+    void ld_e_n(BYTE operand);      //0x1E
 
     void jp_nz(BYTE operand);       //0x20
     void ld_hl_nn(WORD operand);    //0x21
+
+    void ld_h_n(BYTE operand);      //0x26
+
+    void ld_l_n(BYTE operand);      //0x2E
 
     void ld_sp_nn(WORD operand);    //0x31
     void ldd_hl_a();                //0x32
@@ -199,9 +211,10 @@ private:
     friend class Engine;
     registers m_reg{};
     int m_cycles;
-    bool pcChanged;
     std::map<int, instruction> m_instr;
     std::map<int, instruction> m_cbInstr;
     //Pointer to MMU (in Engine)
     mmu *p_mmu = nullptr;
+
+    void printDebug(BYTE opCode);
 };
