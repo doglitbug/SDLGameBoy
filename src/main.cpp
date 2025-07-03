@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
         //Limit FPS so we don't burn out the GPU (kidding...)
         if (const Uint64 frameTime = SDL_GetTicks() - frameStart; frameTime < DELAY_TIME) {
-            SDL_Delay(static_cast<int>(DELAY_TIME - frameTime));
+            //SDL_Delay(static_cast<int>(DELAY_TIME - frameTime));
         }
 
         deltaTime = (SDL_GetTicks() - frameStart) / 1000.0f;

@@ -37,11 +37,11 @@ WORD mmu::readWord(const WORD address) {
 }
 
 void mmu::writeByte(WORD address, BYTE value) {
-    NOTYET
+    //NOTYET
 }
 
 void mmu::writeWord(WORD address, WORD value) {
-    NOTYET
+    //NOTYET
 }
 
 void mmu::loadBIOS() {

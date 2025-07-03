@@ -32,8 +32,8 @@ public:
     void reset();
 
     /// @brief Dispatch an opcode
-    /// @param instr Opcode
-    void dispatch(int instr);
+    /// @param opCode Opcode
+    void dispatch(BYTE opCode);
     void dispatchCB(BYTE opCode);
 
     /// @brief Logical exclusive OR n with register A, result in A
@@ -54,6 +54,7 @@ public:
 
     void ld_de_nn(WORD operand);    //0x11
 
+    void jp_nz(BYTE operand);       //0x20
     void ld_hl_nn(WORD operand);    //0x21
 
     void ld_sp_nn(WORD operand);    //0x31
@@ -196,9 +197,11 @@ private:
     };
 
     friend class Engine;
-    registers m_reg;
+    registers m_reg{};
+    int m_cycles;
+    bool pcChanged;
     std::map<int, instruction> m_instr;
     std::map<int, instruction> m_cbInstr;
     //Pointer to MMU (in Engine)
-    mmu *p_mmu;
+    mmu *p_mmu = nullptr;
 };

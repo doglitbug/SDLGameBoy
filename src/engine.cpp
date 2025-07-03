@@ -89,5 +89,5 @@ void Engine::handleEvents() {
 
 void Engine::update(const float deltaTime) const {
     m_cpu->tick(deltaTime);
-    SDL_Delay(100);
+    //SDL_Delay(10);
 }

@@ -6,13 +6,14 @@ cpu::cpu() {
     //All data here to be taken from http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf for consistency (Pandocs?)
     //Backup https://izik1.github.io/gbops/ then https://rgbds.gbdev.io/docs/v0.9.2/gbz80.7
     m_instr[0x00] = {"NOP", 0, 4, &cpu::nop};
-    m_instr[0x01] = {"LD BC, 0x%04X", 2, 12, nullptr};m_instr[0x01].execute.wordOperand = &cpu::ld_bc_nn;
+    m_instr[0x01] = {"LD BC, u16", 2, 12, nullptr};m_instr[0x01].execute.wordOperand = &cpu::ld_bc_nn;
 
-    m_instr[0x11] = {"LD DE, 0x%04X", 2, 12, nullptr};m_instr[0x11].execute.wordOperand = &cpu::ld_de_nn;
+    m_instr[0x11] = {"LD DE, u16", 2, 12, nullptr};m_instr[0x11].execute.wordOperand = &cpu::ld_de_nn;
 
-    m_instr[0x21] = {"LD HL, 0x%04X", 2, 12, nullptr};m_instr[0x21].execute.wordOperand = &cpu::ld_hl_nn;
+    m_instr[0x20]={"JP NZ,i8",1,8,nullptr};m_instr[0x20].execute.byteOperand = &cpu::jp_nz;
+    m_instr[0x21] = {"LD HL, u16", 2, 12, nullptr};m_instr[0x21].execute.wordOperand = &cpu::ld_hl_nn;
 
-    m_instr[0x31] = {"LD SP, 0x%04X", 2, 12, nullptr};m_instr[0x31].execute.wordOperand = &cpu::ld_sp_nn;
+    m_instr[0x31] = {"LD SP, u16", 2, 12, nullptr};m_instr[0x31].execute.wordOperand = &cpu::ld_sp_nn;
     m_instr[0x32] = {"LDD (HL),A", 0, 8, &cpu::ldd_hl_a};
 
     m_instr[0xA8] = {"XOR B",0,4,&cpu::xor_b};
@@ -29,7 +30,7 @@ cpu::cpu() {
     m_instr[0xEE] = {"XOR *",1,8,nullptr};m_instr[0xEE].execute.byteOperand = &cpu::xor_n;
 
     //CB Prefixed
-    m_cbInstr[0x00] = {"RLC B",1,8,nullptr};
+    //m_cbInstr[0x00] = {"RLC B",1,8,nullptr};
 
     m_cbInstr[0x40] = {"BIT 0, B",0,8,&cpu::cb_test_0_b};
     m_cbInstr[0x41] = {"BIT 0, C",0,8,&cpu::cb_test_0_c};
@@ -111,42 +112,46 @@ void cpu::reset() {
     m_reg.hl = 0x00;
     m_reg.sp = 0x00;
     m_reg.pc = 0x00;
-    //TODO And so on!
+    m_cycles = 0;
 }
 
 void cpu::tick(float deltaTime) {
-    const BYTE opCode = p_mmu->readByte(m_reg.pc++);
+    const BYTE opCode = p_mmu->readByte(m_reg.pc);
+    SDL_Log("0x%04X : [0x%02X] %s",m_reg.pc, opCode, m_instr[opCode].disassembly.c_str());
+    pcChanged = false;
+    m_reg.pc++;
     dispatch(opCode);
-    //TODO cycles!
 }
 
-void cpu::dispatch(const int instr) {
-    if (m_instr.find(instr) == m_instr.end()) {
-        SDL_Log("Missing OpCode 0x%02X", instr);
+void cpu::dispatch(const BYTE opCode) {
+    if (m_instr.find(opCode) == m_instr.end()) {
+        SDL_Log("Missing OpCode 0x%02X", opCode);
         return;
     }
 
-    if (m_instr[instr].execute.noOperand == nullptr) {
-        SDL_Log("Incomplete OpCode 0x%02X", instr);
+    if (m_instr[opCode].execute.noOperand == nullptr) {
+        SDL_Log("Incomplete OpCode 0x%02X", opCode);
         return;
     }
 
-        switch (m_instr[instr].operandLength) {
-            case 0:
-                (this->*m_instr[instr].execute.noOperand)();
-                break;
-            case 1:
-                (this->*m_instr[instr].execute.byteOperand)(p_mmu->readByte(m_reg.pc));
-                break;
-            case 2:
-                (this->*m_instr[instr].execute.wordOperand)(p_mmu->readWord(m_reg.pc));
-                break;
-            default:
-                SDL_Log("Unknown operand length %d", m_instr[instr].operandLength);
-                break;
-        }
+    switch (m_instr[opCode].operandLength) {
+        case 0:
+            (this->*m_instr[opCode].execute.noOperand)();
+            break;
+        case 1:
+            (this->*m_instr[opCode].execute.byteOperand)(p_mmu->readByte(m_reg.pc));
+            break;
+        case 2:
+            (this->*m_instr[opCode].execute.wordOperand)(p_mmu->readWord(m_reg.pc));
+            break;
+        default:
+            SDL_Log("Unknown operand length %d", m_instr[opCode].operandLength);
+            break;
+    }
 
-        m_reg.pc += m_instr[instr].operandLength;
+        m_reg.pc += m_instr[opCode].operandLength;
+
+        m_cycles += m_instr[opCode].cycles;
 }
 
 void cpu::dispatchCB(const BYTE opCode) {
@@ -161,6 +166,7 @@ void cpu::dispatchCB(const BYTE opCode) {
     }
 
     (this->*m_cbInstr[opCode].execute.noOperand)();
+    m_cycles += m_cbInstr[opCode].cycles;
 }
 
 void cpu::doXOR(const BYTE &value) {
@@ -189,6 +195,14 @@ void cpu::ld_bc_nn(const WORD operand) {
 
 void cpu::ld_de_nn(const WORD operand) {
     m_reg.de = operand;
+}
+
+void cpu::jp_nz(const BYTE operand) {
+    if (!m_reg.zero) {
+        m_reg.pc += unsignedToSigned(operand);
+        m_cycles += 4;
+    }
+        pcChanged = true;
 }
 
 void cpu::ld_hl_nn(const WORD operand) {
