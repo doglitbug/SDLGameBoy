@@ -61,6 +61,10 @@ public:
     /// @param value
     void doPop(BYTE &value);
 
+    /// @brief Rotate n left through Carry flag
+    /// @param value Register or value
+    BYTE doRotateLeft(const BYTE &value);
+
     /// @brief Perform one CPU cycle
     void tick(float deltaTime);
 
@@ -168,6 +172,15 @@ public:
 
 
     //CB opCodes
+    void cb_rl_b();                 //0x10
+    void cb_rl_c();                 //0x11
+    void cb_rl_d();                 //0x12
+    void cb_rl_e();                 //0x13
+    void cb_rl_h();                 //0x14
+    void cb_rl_l();                 //0x15
+    void cb_rl_phl();               //0x16
+    void cb_rl_a();                 //0x17
+
     void cb_test_0_b();             //0x40
     void cb_test_0_c();             //0x41
     void cb_test_0_d();             //0x42

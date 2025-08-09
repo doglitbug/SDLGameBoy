@@ -15,3 +15,11 @@ inline sBYTE unsignedToSigned(const BYTE input) {
 inline bool testBit(const int bit, const BYTE &value) {
     return (value & (1 << bit)) != 0;
 }
+
+inline void setBit(const int bit, BYTE &value) {
+    value |= (1 << bit);
+}
+
+inline void resetBit(const int bit, BYTE &value) {
+    value &= ~(1 << bit);
+}

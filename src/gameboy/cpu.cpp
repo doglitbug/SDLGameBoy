@@ -92,7 +92,14 @@ cpu::cpu() {
     m_instr[0xF5] = {"PUSH AF", 0, 16, &cpu::push_af};
 
     //CB Prefixed
-    //m_cbInstr[0x00] = {"RLC B",1,8,nullptr};
+    m_cbInstr[0x10] = {"RL B", 0, 8, &cpu::cb_rl_b};
+    m_cbInstr[0x11] = {"RL C", 0, 8, &cpu::cb_rl_c};
+    m_cbInstr[0x12] = {"RL D", 0, 8, &cpu::cb_rl_e};
+    m_cbInstr[0x13] = {"RL E", 0, 8, &cpu::cb_rl_d};
+    m_cbInstr[0x14] = {"RL H", 0, 8, &cpu::cb_rl_h};
+    m_cbInstr[0x15] = {"RL L", 0, 8, &cpu::cb_rl_l};
+    m_cbInstr[0x16] = {"RL (HL)", 0, 16, &cpu::cb_rl_phl};
+    m_cbInstr[0x17] = {"RL A", 0, 8, &cpu::cb_rl_a};
 
     m_cbInstr[0x40] = {"BIT 0,B",0,8,&cpu::cb_test_0_b};
     m_cbInstr[0x41] = {"BIT 0,C",0,8,&cpu::cb_test_0_c};
@@ -176,6 +183,10 @@ void cpu::tick(float deltaTime) {
     printDebug(opCode);
     m_reg.pc++;
     dispatch(opCode);
+
+    if (m_reg.pc>0x98) {
+        SDL_Log(".");
+    }
 }
 
 void cpu::dispatch(const BYTE opCode) {
@@ -261,6 +272,28 @@ void cpu::doPushWord(const WORD &value) {
 void cpu::doPop(BYTE &value) {
     value=p_mmu->readByte(m_reg.sp);
     m_reg.sp++;
+}
+
+BYTE cpu::doRotateLeft(const BYTE &value) {
+    const bool oldCarry = m_reg.carry;
+    BYTE work = value;
+
+    m_reg.carry = testBit(7, value);
+
+    work = value << 1;
+
+    if (oldCarry) {
+        setBit(0, work);
+    } else {
+        resetBit(0, work);
+    }
+
+    m_reg.zero = work == 0;
+
+    m_reg.negative = false;
+    m_reg.halfCarry = false;
+
+    return work;
 }
 
 
@@ -500,11 +533,44 @@ void cpu::push_af() {
     doPushWord(m_reg.af);
 }
 
-void cpu::ld_a_pnn(WORD operand) {
+void cpu::ld_a_pnn(const WORD operand) {
     m_reg.a = p_mmu->readByte(operand);
 }
 
 //CB
+
+void cpu::cb_rl_b() {
+    m_reg.b = doRotateLeft(m_reg.b);
+}
+
+void cpu::cb_rl_c() {
+    m_reg.c = doRotateLeft(m_reg.c);
+}
+
+void cpu::cb_rl_d() {
+    m_reg.d = doRotateLeft(m_reg.d);
+}
+
+void cpu::cb_rl_e() {
+    m_reg.e = doRotateLeft(m_reg.e);
+}
+
+void cpu::cb_rl_h() {
+    m_reg.h = doRotateLeft(m_reg.h);
+}
+
+void cpu::cb_rl_l() {
+    m_reg.l = doRotateLeft(m_reg.l);
+}
+
+void cpu::cb_rl_phl() {
+    NOTYET
+}
+
+void cpu::cb_rl_a() {
+    m_reg.a = doRotateLeft(m_reg.a);
+}
+
 void cpu::cb_test_0_b() {
     doBitTest(0, m_reg.b);
 }
